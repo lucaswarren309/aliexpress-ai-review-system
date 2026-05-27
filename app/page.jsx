@@ -3,134 +3,120 @@
 import { useState } from "react";
 
 export default function Home() {
+
   const [title, setTitle] = useState("");
-  const [detail, setDetail] = useState("");
+  const [description, setDescription] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleAudit = async () => {
-    if (!title && !detail) {
-      alert("请输入产品内容");
-      return;
-    }
+  async function handleAudit() {
 
     setLoading(true);
-    setResult("");
 
-    try {
-      const response = await fetch("/api/audit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          detail,
-        }),
-      });
+    const response = await fetch("/api/audit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+        description,
+      }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      setResult(data.result);
-    } catch (error) {
-      setResult("AI审核失败");
-    }
+    setResult(data.result || data.error);
 
     setLoading(false);
-  };
+  }
 
   return (
     <div
       style={{
-        minHeight: "100vh",
-        background: "#f5f5f5",
-        padding: "40px",
+        maxWidth: "900px",
+        margin: "40px auto",
+        padding: "20px",
         fontFamily: "Arial",
       }}
     >
-      <div
-        style={{
-          maxWidth: "900px",
-          margin: "0 auto",
-          background: "#fff",
-          borderRadius: "20px",
-          padding: "40px",
-        }}
-      >
-        <h1>速卖通 AI 审核系统</h1>
 
-        <p style={{ color: "#666" }}>
-          AliExpress Operation AI Audit System
-        </p>
+      <h1 style={{ fontSize: "32px", marginBottom: "30px" }}>
+        AliExpress Operation AI Audit System
+      </h1>
 
-        <div style={{ marginTop: "30px" }}>
-          <label>产品标题</label>
-
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="请输入产品标题"
-            style={{
-              width: "100%",
-              padding: "14px",
-              marginTop: "10px",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-            }}
-          />
+      <div style={{ marginBottom: "20px" }}>
+        <div style={{ marginBottom: "10px", fontWeight: "bold" }}>
+          产品标题
         </div>
 
-        <div style={{ marginTop: "20px" }}>
-          <label>产品详情</label>
-
-          <textarea
-            value={detail}
-            onChange={(e) => setDetail(e.target.value)}
-            placeholder="请输入产品详情"
-            rows={8}
-            style={{
-              width: "100%",
-              padding: "14px",
-              marginTop: "10px",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-            }}
-          />
-        </div>
-
-        <button
-          onClick={handleAudit}
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="请输入产品标题"
           style={{
-            marginTop: "25px",
-            background: "#111",
-            color: "#fff",
-            padding: "14px 28px",
-            borderRadius: "12px",
-            border: "none",
-            cursor: "pointer",
+            width: "100%",
+            padding: "14px",
+            borderRadius: "10px",
+            border: "1px solid #ddd",
             fontSize: "16px",
           }}
-        >
-          {loading ? "AI审核中..." : "开始 AI 审核"}
-        </button>
-
-        {result && (
-          <div
-            style={{
-              marginTop: "40px",
-              padding: "30px",
-              background: "#fafafa",
-              borderRadius: "16px",
-              whiteSpace: "pre-line",
-              lineHeight: "1.8",
-            }}
-          >
-            <h2>审核结果</h2>
-
-            <p>{result}</p>
-          </div>
-        )}
+        />
       </div>
+
+      <div style={{ marginBottom: "20px" }}>
+        <div style={{ marginBottom: "10px", fontWeight: "bold" }}>
+          产品详情
+        </div>
+
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="请输入产品详情"
+          rows={10}
+          style={{
+            width: "100%",
+            padding: "14px",
+            borderRadius: "10px",
+            border: "1px solid #ddd",
+            fontSize: "16px",
+          }}
+        />
+      </div>
+
+      <button
+        onClick={handleAudit}
+        disabled={loading}
+        style={{
+          background: "#111",
+          color: "#fff",
+          padding: "14px 28px",
+          borderRadius: "12px",
+          border: "none",
+          cursor: "pointer",
+          fontSize: "16px",
+        }}
+      >
+        {loading ? "AI审核中..." : "开始 AI 审核"}
+      </button>
+
+      {result && (
+        <div
+          style={{
+            marginTop: "40px",
+            padding: "30px",
+            background: "#f7f7f7",
+            borderRadius: "20px",
+            whiteSpace: "pre-wrap",
+            lineHeight: "1.8",
+          }}
+        >
+          <h2>审核结果</h2>
+
+          <div>{result}</div>
+        </div>
+      )}
+
     </div>
   );
 }
