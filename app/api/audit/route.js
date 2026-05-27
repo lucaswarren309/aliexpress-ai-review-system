@@ -6,7 +6,9 @@ const client = new OpenAI({
 });
 
 export async function POST(req) {
+
   try {
+
     const body = await req.json();
 
     const prompt = `
@@ -20,41 +22,23 @@ ${body.title}
 【产品详情】
 ${body.description}
 
-请严格按照以下结构输出：
+请输出：
 
-# 1. 综合评分
-给出 100 分制评分。
+1. 综合评分（100分）
+2. SEO评分
+3. 品牌感评分
+4. 转化逻辑评分
+5. 可读性评分
+6. 主要问题
+7. 优化建议
+8. 推荐优化标题
 
-# 2. SEO评分
-分析标题关键词、搜索意图、关键词堆砌问题。
-
-# 3. 品牌感评分
-判断是否有欧美专业品牌感，是否像中国跨境风。
-
-# 4. 转化逻辑评分
-分析是否能吸引用户点击、理解、下单。
-
-# 5. 可读性评分
-分析标题和详情是否清晰、专业、易理解。
-
-# 6. 主要问题
-列出具体问题。
-
-# 7. 优化建议
-给出可执行修改建议。
-
-# 8. 推荐优化标题
-生成 1 个更适合 AliExpress / 独立站 / 欧美市场的英文标题。
-
-审核标准：
+要求：
 - 专业
-- 欧美市场表达
-- 避免 AliExpress 低端风格
-- 避免关键词堆砌
-- 避免 HOT SALE / CHEAP / BEST QUALITY
-- 强调用户搜索习惯
-- 强调转化逻辑
-- 用中文分析
+- 欧美品牌风格
+- Shopify 独立站风格
+- 避免中国跨境风
+- 中文输出
 `;
 
     const completion = await client.chat.completions.create({
@@ -71,9 +55,13 @@ ${body.description}
     return Response.json({
       result: completion.choices[0].message.content,
     });
+
   } catch (error) {
+
     return Response.json({
       result: "AI审核失败：" + error.message,
     });
+
   }
+
 }
